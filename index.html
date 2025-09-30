@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>نموذج ادارة الموظفين</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+.arabic-text {
+  font-family: 'Tajawal', sans-serif;
+  direction: rtl;
+  text-align: right;
+  line-height: 1.8;
+}
+.bg-dm{
+  background-color: #323276;
+}
+</style>
+</head>
+<body>
+
+<div class="container my-5">
+  <div class="card shadow">
+    <div class="card-header bg-dm text-white">
+      <h5 class="mb-0 arabic-text ">نموذج الموظف </h5>
+    </div>
+    <div class="card-body py-2">
+      <form id="employeeForm" class="row g-3 align-items-center">
+          <input type="hidden" id="empId">
+
+        <!-- Name -->
+        <div class="col-md-6">
+          <label for="name" class="form-label arabic-text "> الاسم</label>
+          <input type="text" class="form-control" id="name" required>
+        </div>
+
+        <!-- الجنسية -->
+        <div class="col-md-6">
+          <label class="form-label d-block arabic-text me-2 ">الجنسية</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="nat" id="saudi" value="سعودي" required >
+            <label class="form-check-label arabic-text" for="saudi">سعودي</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="nat" id="nosaudi" value="مقيم">
+            <label class="form-check-label arabic-text" for="nosaudi">مقيم</label>
+          </div>
+        </div>
+
+        <!-- Department -->
+        <div class="col-md-6">
+          <label for="department" class="form-label arabic-text">القسم</label>
+          <select class="form-select" id="department" required>
+            <option selected disabled value="">اختر...</option>
+            <option value="IT">IT</option>
+            <option value="HR">HR</option>
+            <option value="Finance">المالية</option>
+          </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-12 mb-auto justify-content-end gap-2 mt-3">
+          <button type="submit" class="btn btn-success arabic-text">اضافة أو تحديث</button>
+          <button type="reset" class="btn btn-secondary arabic-text">مسح</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results Table -->
+  <div class="card shadow mt-4">
+    <div class="card-header bg-dm text-white">
+      <h5 class="mb-0 arabic-text"> قائمة الموظفين</h5>
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered table-striped arabic-text">
+        <thead class="table-dark">
+          <tr>
+            <th>الاسم</th>
+            <th>الجنسية</th>
+            <th>القسم</th>
+            <th style="width:150px;"></th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+let employees = JSON.parse(localStorage.getItem("employees")) || [];
+let editIndex = -1;
+
+// Render table
+function renderTable() {
+  const tbody = document.getElementById("resultsBody");
+  tbody.innerHTML = "";
+  employees.forEach((emp, index) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${emp.name}</td>
+        <td>${emp.nat}</td>
+        <td>${emp.dept}</td>
+        <td>
+          <button class="btn btn-sm btn-warning" onclick="editEmployee(${index})">تحرير</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${index})">حذف</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+// Add / Edit employee
+document.getElementById("employeeForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+ const id = document.getElementById("empId").value || Date.now(); // unique id
+
+  const name = document.getElementById("name").value;
+  const nat = document.querySelector("input[name='nat']:checked").value;
+  const dept = document.getElementById("department").value;
+
+  if (editIndex === -1) {
+    // Add new
+    employees.push({ id, name, nat, dept });
+  } else {
+    // Update existing
+    employees[editIndex] = { id, name, nat, dept };
+    editIndex = -1;
+  }
+
+  localStorage.setItem("employees", JSON.stringify(employees));
+  renderTable();
+  this.reset();
+});
+
+// Edit
+function editEmployee(index) {
+  const emp = employees[index];
+    document.getElementById("empId").value = emp.id; // put ID in hidden field
+  document.getElementById("name").value = emp.name;
+   const natInput = document.querySelector(`input[name="nat"][value="${emp.nat}"]`);
+  if (natInput) {
+    natInput.checked = true;
+  }
+  document.getElementById("department").value = emp.dept;
+  editIndex = index;
+}
+
+// Delete
+function deleteEmployee(index) {
+  employees.splice(index, 1);
+  localStorage.setItem("employees", JSON.stringify(employees));
+  renderTable();
+}
+
+// First render
+renderTable();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
