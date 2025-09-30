@@ -15,6 +15,9 @@
 .bg-dm{
   background-color: #323276;
 }
+.custom-width {
+    width: 80%; /* or px value like 200px */
+}
 </style>
 </head>
 <body>
@@ -31,10 +34,10 @@
         <!-- Name -->
         <div class="col-md-6">
           <label for="name" class="form-label arabic-text "> الاسم</label>
-          <input type="text" class="form-control" id="name" required>
+          <input type="text" class="form-control custom-width" id="name"  required>
         </div>
 
-        <!-- الجنسية -->
+        <!-- الجنسية --> 
         <div class="col-md-6">
           <label class="form-label d-block arabic-text me-2 ">الجنسية</label>
           <div class="form-check form-check-inline">
@@ -50,11 +53,11 @@
         <!-- Department -->
         <div class="col-md-6">
           <label for="department" class="form-label arabic-text">القسم</label>
-          <select class="form-select" id="department" required>
+          <select class="form-select custom-width" id="department" required>
             <option selected disabled value="">اختر...</option>
             <option value="IT">IT</option>
             <option value="HR">HR</option>
-            <option value="Finance">المالية</option>
+            <option value="المالية">المالية</option>
           </select>
         </div>
 
